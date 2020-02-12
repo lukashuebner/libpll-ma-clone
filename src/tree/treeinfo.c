@@ -767,6 +767,26 @@ PLL_EXPORT int pllmod_treeinfo_destroy_partition(pllmod_treeinfo_t * treeinfo,
   return PLL_SUCCESS;
 }
 
+PLL_EXPORT void pllmod_treeinfo_reset_partitions(pllmod_treeinfo_t * treeinfo)
+{
+  unsigned int p;
+  for (p = 0; p < treeinfo->partition_count; ++p)
+  {
+    pllmod_treeinfo_destroy_partition(treeinfo, p);
+    treeinfo->partitions[p] = NULL;
+  }
+  // part_count is set to the number of partitions in the dataset, which will not
+  // change over the course of one run. init_partition_count has to be reset, as
+  // we deinitialized all partitions which have been created.
+
+  for (p = 0; p < treeinfo->init_partition_count; ++p)
+  {
+    treeinfo->init_partitions[p] = NULL;
+  }
+
+  treeinfo->init_partition_count = 0;
+}
+
 PLL_EXPORT void pllmod_treeinfo_destroy(pllmod_treeinfo_t * treeinfo)
 {
   if (!treeinfo) return;
@@ -779,14 +799,14 @@ PLL_EXPORT void pllmod_treeinfo_destroy(pllmod_treeinfo_t * treeinfo)
   free(treeinfo->subnodes);
 
   /* destroy all structures allocated for the concrete PLL partition instance */
-  unsigned int p;
-  for (p = 0; p < treeinfo->partition_count; ++p)
+  for (unsigned int p = 0; p < treeinfo->partition_count; ++p)
   {
+    // TODO Are branch lengths restored from model? Are they recreated when the partition is recreated?
     if (treeinfo->brlen_linkage == PLLMOD_COMMON_BRLEN_UNLINKED)
       free(treeinfo->branch_lengths[p]);
-
-    pllmod_treeinfo_destroy_partition(treeinfo, p);
   }
+
+  pllmod_treeinfo_reset_partitions(treeinfo);
 
   if(treeinfo->subst_matrix_symmetries)
     free(treeinfo->subst_matrix_symmetries);

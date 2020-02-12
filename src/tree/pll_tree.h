@@ -590,6 +590,8 @@ int pllmod_treeinfo_set_parallel_context(pllmod_treeinfo_t * treeinfo,
                                                                     size_t,
                                                                     int op));
 
+PLL_EXPORT void pllmod_treeinfo_reset_parttions(pllmod_treeinfo_t * treeinfo);
+
 PLL_EXPORT int pllmod_treeinfo_init_partition(pllmod_treeinfo_t * treeinfo,
                                            unsigned int partition_index,
                                            pll_partition_t * partition,
@@ -642,6 +644,8 @@ int pllmod_treeinfo_destroy_topology(pllmod_treeinfo_topology_t * topol);
 
 PLL_EXPORT int pllmod_treeinfo_destroy_partition(pllmod_treeinfo_t * treeinfo,
                                                  unsigned int partition_index);
+
+PLL_EXPORT void pllmod_treeinfo_reset_partitions(pllmod_treeinfo_t * treeinfo);
 
 PLL_EXPORT void pllmod_treeinfo_destroy(pllmod_treeinfo_t * treeinfo);
 

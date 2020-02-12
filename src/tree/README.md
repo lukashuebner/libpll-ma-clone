@@ -83,6 +83,7 @@ The code is written in C.
 * `double pllmod_utree_compute_lk`
 * `int pllmod_rtree_traverse_apply`
 * `pllmod_treeinfo_t * pllmod_treeinfo_create`
+* `void pllmod_treeinfo_reset_partitions`
 * `int pllmod_treeinfo_init_partition`
 * `int pllmod_treeinfo_set_active_partition`
 * `void pllmod_treeinfo_set_root`
