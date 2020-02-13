@@ -645,6 +645,8 @@ int pllmod_treeinfo_destroy_topology(pllmod_treeinfo_topology_t * topol);
 PLL_EXPORT int pllmod_treeinfo_destroy_partition(pllmod_treeinfo_t * treeinfo,
                                                  unsigned int partition_index);
 
+PLL_EXPORT void pllmod_treeinfo_update_partials_and_clvs(pllmod_treeinfo_t * treeinfo);
+
 PLL_EXPORT void pllmod_treeinfo_reset_partitions(pllmod_treeinfo_t * treeinfo);
 
 PLL_EXPORT void pllmod_treeinfo_destroy(pllmod_treeinfo_t * treeinfo);

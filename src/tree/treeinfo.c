@@ -767,6 +767,78 @@ PLL_EXPORT int pllmod_treeinfo_destroy_partition(pllmod_treeinfo_t * treeinfo,
   return PLL_SUCCESS;
 }
 
+/* This function has to be called before calling pllmod_treeinfo_compute_loglh(...) on a
+ * newly created treeinfo structure. Failing to do so will result in a segfault when
+ * accessing the CLVs.
+ */
+PLL_EXPORT void pllmod_treeinfo_update_partials_and_clvs(pllmod_treeinfo_t * treeinfo) {
+  unsigned int traversal_size = 0; 
+  unsigned int ops_count;
+
+  const int old_active_partition = treeinfo->active_partition;
+
+  /* NOTE: in unlinked brlen mode, up-to-date brlens for partition p
+   * have to be prefetched to treeinfo->branch_lengths[p] !!! */
+  int collect_brlen =
+      (treeinfo->brlen_linkage == PLLMOD_COMMON_BRLEN_UNLINKED ? 0 : 1);
+
+  pllmod_treeinfo_set_active_partition(treeinfo, PLLMOD_TREEINFO_PARTITION_ALL);
+
+  /* perform a FULL postorder traversal of the unrooted tree */
+  pll_utree_traverse(treeinfo->root,
+                          PLL_TREE_TRAVERSE_POSTORDER,
+                          cb_full_traversal,
+                          treeinfo->travbuffer,
+                          &traversal_size);
+
+  /* update p-matrices */
+  if (collect_brlen)
+  {
+    assert(traversal_size == treeinfo->tip_count * 2 - 2);
+    for (unsigned int i = 0; i < traversal_size; ++i)
+      {
+        pll_unode_t * node = treeinfo->travbuffer[i];
+        treeinfo->branch_lengths[0][node->pmatrix_index] = node->length;
+      }
+  }
+
+  pllmod_treeinfo_update_prob_matrices(treeinfo, 1);
+
+  /* create operations based on partial traversal obtained above */
+  pll_utree_create_operations(treeinfo->travbuffer,
+                              traversal_size,
+                              NULL,
+                              NULL,
+                              treeinfo->operations,
+                              NULL,
+                              &ops_count);
+
+  treeinfo->counter += ops_count;
+
+  /* iterate over all partitions (we assume that traversal is the same) */
+  for (unsigned int p = 0; p < treeinfo->partition_count; ++p)
+  {
+    if (!treeinfo->partitions[p])
+    {
+      /* this partition will be computed by another thread(s) */
+      continue;
+    }
+
+    /* all subsequent operation will affect current partition only */
+    pllmod_treeinfo_set_active_partition(treeinfo, (int)p);
+
+    /* use the operations array to compute all ops_count inner CLVs. Operations
+       will be carried out sequentially starting from operation 0 towards
+       ops_count-1 */
+    pll_update_partials(treeinfo->partitions[p],
+                        treeinfo->operations,
+                        ops_count);
+  }
+
+  /* restore original active partition */
+  pllmod_treeinfo_set_active_partition(treeinfo, old_active_partition);
+}
+
 PLL_EXPORT void pllmod_treeinfo_reset_partitions(pllmod_treeinfo_t * treeinfo)
 {
   unsigned int p;

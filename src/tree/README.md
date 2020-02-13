@@ -89,6 +89,7 @@ The code is written in C.
 * `void pllmod_treeinfo_set_root`
 * `void pllmod_treeinfo_set_branch_length`
 * `int pllmod_treeinfo_destroy_partition`
+* `void pllmod_treeinfo_update_partials_and_clvs` 
 * `void pllmod_treeinfo_destroy`
 * `int pllmod_treeinfo_update_prob_matrices`
 * `void pllmod_treeinfo_invalidate_all`
