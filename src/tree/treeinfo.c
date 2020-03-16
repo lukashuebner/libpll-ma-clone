@@ -89,6 +89,7 @@ PLL_EXPORT pllmod_treeinfo_t * pllmod_treeinfo_create(pll_unode_t * root,
 
   /* create pll_utree structure and store it in treeinfo */
   treeinfo->tree = pll_utree_wraptree(root, tips);
+  treeinfo->recovery_tree = NULL;
 
   if (!treeinfo->tree || !treeinfo_check_tree(treeinfo, treeinfo->tree))
   {
@@ -913,6 +914,12 @@ PLL_EXPORT void pllmod_treeinfo_destroy(pllmod_treeinfo_t * treeinfo)
   {
     free(treeinfo->tree->nodes);
     free(treeinfo->tree);
+  }
+
+  if (treeinfo->recovery_tree) {
+    free(treeinfo->recovery_tree->nodes);
+    free(treeinfo->recovery_tree);
+    treeinfo->recovery_tree = NULL;
   }
 
   /* finally, deallocate treeinfo object itself */

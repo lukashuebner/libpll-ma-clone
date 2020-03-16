@@ -261,6 +261,9 @@ typedef struct treeinfo
   // parallelization stuff
   void * parallel_context;
   void (*parallel_reduce_cb)(void *, double *, size_t, int);
+
+  // recovery after rank failure
+  pll_utree_t * recovery_tree;
 } pllmod_treeinfo_t;
 
 typedef struct
@@ -662,6 +665,8 @@ PLL_EXPORT int pllmod_treeinfo_validate_clvs(pllmod_treeinfo_t * treeinfo,
 
 PLL_EXPORT void pllmod_treeinfo_invalidate_pmatrix(pllmod_treeinfo_t * treeinfo,
                                                    const pll_unode_t * edge);
+
+PLL_EXPORT void pllmod_treeinfo_update_recovery_tree(pllmod_treeinfo_t * treeinfo);
 
 PLL_EXPORT void pllmod_treeinfo_invalidate_clv(pllmod_treeinfo_t * treeinfo,
                                                const pll_unode_t * edge);
