@@ -826,6 +826,15 @@ static int best_reinsert_edge(pllmod_treeinfo_t * treeinfo,
   return PLL_SUCCESS;
 }
 
+void (*pllmod_treeinfo_update_recovery_tree_benchmarked_func)(pllmod_treeinfo_t *) = NULL;
+PLL_EXPORT void pllmod_treeinfo_update_recovery_tree_set_benchmarked(void (*func)(pllmod_treeinfo_t *)) {
+  pllmod_treeinfo_update_recovery_tree_benchmarked_func = func;
+}
+
+PLL_EXPORT void pllmod_treeinfo_update_recovery_tree_benchmarked(pllmod_treeinfo_t * treeinfo) {
+  (*pllmod_treeinfo_update_recovery_tree_benchmarked_func)(treeinfo);
+}
+
 PLL_EXPORT void pllmod_treeinfo_update_recovery_tree(pllmod_treeinfo_t * treeinfo) {
   if (treeinfo->recovery_tree) {
     free(treeinfo->recovery_tree->nodes);
@@ -923,7 +932,7 @@ static double reinsert_nodes(pllmod_treeinfo_t * treeinfo, pll_unode_t ** nodes,
       assert(spr_entry.lh > best_lh);
 
       best_lh = spr_entry.lh;
-      (*pllmod_treeinfo_update_recovery_tree_benchmarked)(treeinfo);
+      pllmod_treeinfo_update_recovery_tree_benchmarked(treeinfo);
 
       DBG("New best: %f\n", best_lh);
     }
@@ -1043,8 +1052,7 @@ PLL_EXPORT double pllmod_algo_spr_round(pllmod_treeinfo_t * treeinfo,
 
   loglh   = pllmod_treeinfo_compute_loglh(treeinfo, 0);
   best_lh = loglh;
-  /* pllmod_treeinfo_update_recovery_tree(treeinfo); */
-  (*pllmod_treeinfo_update_recovery_tree_benchmarked)(treeinfo);
+  pllmod_treeinfo_update_recovery_tree_benchmarked(treeinfo);
 
   /* query all nodes */
   allnodes_count = (treeinfo->tip_count - 2) * 3;
@@ -1107,8 +1115,7 @@ PLL_EXPORT double pllmod_algo_spr_round(pllmod_treeinfo_t * treeinfo,
                                  epsilon,
                                  0.25);
   DBG("Best tree LH after BLO: %f\n", best_lh);
-  /* pllmod_treeinfo_update_recovery_tree(treeinfo); */
-  (*pllmod_treeinfo_update_recovery_tree_benchmarked)(treeinfo);
+  pllmod_treeinfo_update_recovery_tree_benchmarked(treeinfo);
 
   best_topol = pllmod_treeinfo_get_topology(treeinfo, NULL);
   if (!best_topol)
@@ -1241,8 +1248,7 @@ PLL_EXPORT double pllmod_algo_spr_round(pllmod_treeinfo_t * treeinfo,
         goto error_exit;
 
       best_lh = loglh;
-      /* pllmod_treeinfo_update_recovery_tree(treeinfo); */
-      (*pllmod_treeinfo_update_recovery_tree_benchmarked)(treeinfo);
+      pllmod_treeinfo_update_recovery_tree_benchmarked(treeinfo);
     }
 
     if (undo_SPR)
@@ -1299,8 +1305,7 @@ PLL_EXPORT double pllmod_algo_spr_round(pllmod_treeinfo_t * treeinfo,
     assert(fabs(loglh - best_lh) < 1e-6);
   }
 
-  /* pllmod_treeinfo_update_recovery_tree(treeinfo); */
-  (*pllmod_treeinfo_update_recovery_tree_benchmarked)(treeinfo);
+  pllmod_treeinfo_update_recovery_tree_benchmarked(treeinfo);
   return loglh;
 
 error_exit:

@@ -668,7 +668,9 @@ PLL_EXPORT void pllmod_treeinfo_invalidate_pmatrix(pllmod_treeinfo_t * treeinfo,
 
 PLL_EXPORT void pllmod_treeinfo_update_recovery_tree(pllmod_treeinfo_t * treeinfo);
 
-PLL_EXPORT void (*pllmod_treeinfo_update_recovery_tree_benchmarked)(pllmod_treeinfo_t * treeinfo);
+PLL_EXPORT void pllmod_treeinfo_update_recovery_tree_set_benchmarked(void (*func)(pllmod_treeinfo_t *));
+
+PLL_EXPORT void pllmod_treeinfo_update_recovery_tree_benchmarked(pllmod_treeinfo_t * treeinfo);
 
 PLL_EXPORT void pllmod_treeinfo_invalidate_clv(pllmod_treeinfo_t * treeinfo,
                                                const pll_unode_t * edge);
