@@ -832,7 +832,9 @@ PLL_EXPORT void pllmod_treeinfo_update_recovery_tree_set_benchmarked(void (*func
 }
 
 PLL_EXPORT void pllmod_treeinfo_update_recovery_tree_benchmarked(pllmod_treeinfo_t * treeinfo) {
-  (*pllmod_treeinfo_update_recovery_tree_benchmarked_func)(treeinfo);
+  if (pllmod_treeinfo_update_recovery_tree_benchmarked_func != NULL) {
+    (*pllmod_treeinfo_update_recovery_tree_benchmarked_func)(treeinfo);
+  }
 }
 
 PLL_EXPORT void pllmod_treeinfo_update_recovery_tree(pllmod_treeinfo_t * treeinfo) {
